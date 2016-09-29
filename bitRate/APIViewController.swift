@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import Alamofire
+
 
 class APIViewController: UIViewController {
     let table = UITableView()
@@ -17,8 +19,16 @@ class APIViewController: UIViewController {
         
         table.frame = view.frame
         view.addSubview(table)
+        
+        getAPI()
     }
     
+    func getAPI() {
+        Alamofire.request(.GET, "https://api.zaif.jp/api/1/last_price/btc_jpy")
+            .responseJSON { response in
+                print(response.result.value)
+        }
+    }
     
     
     
