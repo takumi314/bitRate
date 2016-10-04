@@ -1,185 +1,30 @@
+// ManagerTests.swift
 //
-//  ManagerTests.swift
+// Copyright (c) 2014–2015 Alamofire Software Foundation (http://alamofire.org/)
 //
-//  Copyright (c) 2014-2016 Alamofire Software Foundation (http://alamofire.org/)
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
-@testable import Alamofire
+import Alamofire
 import Foundation
 import XCTest
 
 class ManagerTestCase: BaseTestCase {
-
-    // MARK: Initialization Tests
-
-    func testInitializerWithDefaultArguments() {
-        // Given, When
-        let manager = Manager()
-
-        // Then
-        XCTAssertNotNil(manager.session.delegate, "session delegate should not be nil")
-        XCTAssertTrue(manager.delegate === manager.session.delegate, "manager delegate should equal session delegate")
-        XCTAssertNil(manager.session.serverTrustPolicyManager, "session server trust policy manager should be nil")
-    }
-
-    func testDefaultUserAgentHeader() {
-        // Given, When
-        let userAgent = Manager.defaultHTTPHeaders["User-Agent"]
-
-        // Then
-        let osNameVersion: String = {
-            let versionString: String
-
-            if #available(OSX 10.10, *) {
-                let version = NSProcessInfo.processInfo().operatingSystemVersion
-                versionString = "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
-            } else {
-                versionString = "10.9"
-            }
-
-            let osName: String = {
-                #if os(iOS)
-                    return "iOS"
-                #elseif os(watchOS)
-                    return "watchOS"
-                #elseif os(tvOS)
-                    return "tvOS"
-                #elseif os(OSX)
-                    return "OS X"
-                #elseif os(Linux)
-                    return "Linux"
-                #else
-                    return "Unknown"
-                #endif
-            }()
-
-            return "\(osName) \(versionString)"
-        }()
-
-        let alamofireVersion: String = {
-            guard
-                let afInfo = NSBundle(forClass: Manager.self).infoDictionary,
-                build = afInfo["CFBundleShortVersionString"]
-            else { return "Unknown" }
-
-            return "Alamofire/\(build)"
-        }()
-
-        let expectedUserAgent = "Unknown/Unknown (Unknown; build:Unknown; \(osNameVersion)) \(alamofireVersion)"
-        XCTAssertEqual(userAgent, expectedUserAgent)
-    }
-
-    func testInitializerWithSpecifiedArguments() {
-        // Given
-        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-        let delegate = Manager.SessionDelegate()
-        let serverTrustPolicyManager = ServerTrustPolicyManager(policies: [:])
-
-        // When
-        let manager = Manager(
-            configuration: configuration,
-            delegate: delegate,
-            serverTrustPolicyManager: serverTrustPolicyManager
-        )
-
-        // Then
-        XCTAssertNotNil(manager.session.delegate, "session delegate should not be nil")
-        XCTAssertTrue(manager.delegate === manager.session.delegate, "manager delegate should equal session delegate")
-        XCTAssertNotNil(manager.session.serverTrustPolicyManager, "session server trust policy manager should not be nil")
-    }
-
-    func testThatFailableInitializerSucceedsWithDefaultArguments() {
-        // Given
-        let delegate = Manager.SessionDelegate()
-        let session: NSURLSession = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            return NSURLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-        }()
-
-        // When
-        let manager = Manager(session: session, delegate: delegate)
-
-        // Then
-        if let manager = manager {
-            XCTAssertTrue(manager.delegate === manager.session.delegate, "manager delegate should equal session delegate")
-            XCTAssertNil(manager.session.serverTrustPolicyManager, "session server trust policy manager should be nil")
-        } else {
-            XCTFail("manager should not be nil")
-        }
-    }
-
-    func testThatFailableInitializerSucceedsWithSpecifiedArguments() {
-        // Given
-        let delegate = Manager.SessionDelegate()
-        let session: NSURLSession = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            return NSURLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-        }()
-
-        let serverTrustPolicyManager = ServerTrustPolicyManager(policies: [:])
-
-        // When
-        let manager = Manager(session: session, delegate: delegate, serverTrustPolicyManager: serverTrustPolicyManager)
-
-        // Then
-        if let manager = manager {
-            XCTAssertTrue(manager.delegate === manager.session.delegate, "manager delegate should equal session delegate")
-            XCTAssertNotNil(manager.session.serverTrustPolicyManager, "session server trust policy manager should not be nil")
-        } else {
-            XCTFail("manager should not be nil")
-        }
-    }
-
-    func testThatFailableInitializerFailsWithWhenDelegateDoesNotEqualSessionDelegate() {
-        // Given
-        let delegate = Manager.SessionDelegate()
-        let session: NSURLSession = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            return NSURLSession(configuration: configuration, delegate: Manager.SessionDelegate(), delegateQueue: nil)
-        }()
-
-        // When
-        let manager = Manager(session: session, delegate: delegate)
-
-        // Then
-        XCTAssertNil(manager, "manager should be nil")
-    }
-
-    func testThatFailableInitializerFailsWhenSessionDelegateIsNil() {
-        // Given
-        let delegate = Manager.SessionDelegate()
-        let session: NSURLSession = {
-            let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
-            return NSURLSession(configuration: configuration, delegate: nil, delegateQueue: nil)
-        }()
-
-        // When
-        let manager = Manager(session: session, delegate: delegate)
-
-        // Then
-        XCTAssertNil(manager, "manager should be nil")
-    }
-
-    // MARK: Start Requests Immediately Tests
-
     func testSetStartRequestsImmediatelyToFalseAndResumeRequest() {
         // Given
         let manager = Alamofire.Manager()
@@ -200,14 +45,12 @@ class ManagerTestCase: BaseTestCase {
             }
             .resume()
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
         XCTAssertNotNil(response, "response should not be nil")
         XCTAssertTrue(response?.statusCode == 200, "response status code should be 200")
     }
-
-    // MARK: Deinitialization Tests
 
     func testReleasingManagerWithPendingRequestDeinitializesSuccessfully() {
         // Given
@@ -262,15 +105,10 @@ class ManagerConfigurationHeadersTestCase: BaseTestCase {
         // Given, When, Then
         executeAuthorizationHeaderTestForConfigurationType(.Ephemeral)
     }
+
     func testThatBackgroundConfigurationHeadersAreSentWithRequest() {
         // Given, When, Then
-    #if swift(>=2.3)
-        // ⚠️⚠️ rdar://26870455
-        // Will be enabled once rdar is resolved
-        print("⚠️⚠️ Skipping \(#function) due to rdar://26870455 ⚠️⚠️")
-    #else
         executeAuthorizationHeaderTestForConfigurationType(.Background)
-    #endif
     }
 
     private func executeAuthorizationHeaderTestForConfigurationType(type: ConfigurationType) {
@@ -301,26 +139,31 @@ class ManagerConfigurationHeadersTestCase: BaseTestCase {
 
         let expectation = expectationWithDescription("request should complete successfully")
 
-        var response: Response<AnyObject, NSError>?
+        var request: NSURLRequest?
+        var response: NSHTTPURLResponse?
+        var result: Result<AnyObject>?
 
         // When
         manager.request(.GET, "https://httpbin.org/headers")
-            .responseJSON { closureResponse in
-                response = closureResponse
+            .responseJSON { responseRequest, responseResponse, responseResult in
+                request = responseRequest
+                response = responseResponse
+                result = responseResult
+
                 expectation.fulfill()
             }
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
-        if let response = response {
-            XCTAssertNotNil(response.request, "request should not be nil")
-            XCTAssertNotNil(response.response, "response should not be nil")
-            XCTAssertNotNil(response.data, "data should not be nil")
-            XCTAssertTrue(response.result.isSuccess, "result should be a success")
+        XCTAssertNotNil(request, "request should not be nil")
+        XCTAssertNotNil(response, "response should not be nil")
+
+        if let result = result {
+            XCTAssertTrue(result.isSuccess, "result should be a success")
 
             if let
-                headers = response.result.value?["headers" as NSString] as? [String: String],
+                headers = result.value?["headers" as NSString] as? [String: String],
                 authorization = headers["Authorization"]
             {
                 XCTAssertEqual(authorization, "Bearer 123456", "authorization header value does not match")
@@ -328,7 +171,7 @@ class ManagerConfigurationHeadersTestCase: BaseTestCase {
                 XCTFail("failed to extract authorization header value")
             }
         } else {
-            XCTFail("response should not be nil")
+            XCTFail("result should not be nil")
         }
     }
 }

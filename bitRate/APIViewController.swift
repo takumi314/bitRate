@@ -8,14 +8,15 @@
 
 import UIKit
 import Alamofire
-
+import SwiftyJSON
 
 class APIViewController: UIViewController {
+    
     let table = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "JPY/BTC"
+        self.title = "JPY/BTC"
         
         table.frame = view.frame
         view.addSubview(table)

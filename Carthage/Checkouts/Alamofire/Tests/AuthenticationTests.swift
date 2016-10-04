@@ -1,26 +1,24 @@
+// AuthenticationTests.swift
 //
-//  AuthenticationTests.swift
+// Copyright (c) 2014–2015 Alamofire Software Foundation (http://alamofire.org/)
 //
-//  Copyright (c) 2014-2016 Alamofire Software Foundation (http://alamofire.org/)
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 import Alamofire
 import Foundation
@@ -31,14 +29,9 @@ class AuthenticationTestCase: BaseTestCase {
     let password = "password"
     var URLString = ""
 
-    var manager: Manager!
-
     override func setUp() {
         super.setUp()
 
-        manager = Manager(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
-
-        // Clear out credentials
         let credentialStorage = NSURLCredentialStorage.sharedCredentialStorage()
 
         for (protectionSpace, credentials) in credentialStorage.allCredentials {
@@ -46,10 +39,6 @@ class AuthenticationTestCase: BaseTestCase {
                 credentialStorage.removeCredential(credential, forProtectionSpace: protectionSpace)
             }
         }
-
-        // Clear out cookies
-        let cookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
-        cookieStorage.cookies?.forEach { cookieStorage.deleteCookie($0) }
     }
 }
 
@@ -68,10 +57,10 @@ class BasicAuthenticationTestCase: AuthenticationTestCase {
         var request: NSURLRequest?
         var response: NSHTTPURLResponse?
         var data: NSData?
-        var error: NSError?
+        var error: ErrorType?
 
         // When
-        manager.request(.GET, URLString)
+        Alamofire.request(.GET, URLString)
             .authenticate(user: "invalid", password: "credentials")
             .response { responseRequest, responseResponse, responseData, responseError in
                 request = responseRequest
@@ -82,14 +71,17 @@ class BasicAuthenticationTestCase: AuthenticationTestCase {
                 expectation.fulfill()
             }
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
         XCTAssertNotNil(request, "request should not be nil")
-        XCTAssertNotNil(response, "response should not be nil")
-        XCTAssertEqual(response?.statusCode ?? 0, 401, "response status code should be 401")
+        XCTAssertNil(response, "response should be nil")
         XCTAssertNotNil(data, "data should not be nil")
-        XCTAssertNil(error, "error should be nil")
+        XCTAssertNotNil(error, "error should not be nil")
+
+        if let code = (error as? NSError)?.code {
+            XCTAssertEqual(code, -999, "error should be NSURLErrorDomain Code -999 'cancelled'")
+        }
     }
 
     func testHTTPBasicAuthenticationWithValidCredentials() {
@@ -99,10 +91,10 @@ class BasicAuthenticationTestCase: AuthenticationTestCase {
         var request: NSURLRequest?
         var response: NSHTTPURLResponse?
         var data: NSData?
-        var error: NSError?
+        var error: ErrorType?
 
         // When
-        manager.request(.GET, URLString)
+        Alamofire.request(.GET, URLString)
             .authenticate(user: user, password: password)
             .response { responseRequest, responseResponse, responseData, responseError in
                 request = responseRequest
@@ -113,38 +105,7 @@ class BasicAuthenticationTestCase: AuthenticationTestCase {
                 expectation.fulfill()
             }
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
-
-        // Then
-        XCTAssertNotNil(request, "request should not be nil")
-        XCTAssertNotNil(response, "response should not be nil")
-        XCTAssertEqual(response?.statusCode ?? 0, 200, "response status code should be 200")
-        XCTAssertNotNil(data, "data should not be nil")
-        XCTAssertNil(error, "error should be nil")
-    }
-
-    func testHiddenHTTPBasicAuthentication() {
-        // Given
-        let authorizationHeader = Request.authorizationHeader(user: user, password: password)
-        let expectation = expectationWithDescription("\(URLString) 200")
-
-        var request: NSURLRequest?
-        var response: NSHTTPURLResponse?
-        var data: NSData?
-        var error: NSError?
-
-        // When
-        manager.request(.GET, "http://httpbin.org/hidden-basic-auth/\(user)/\(password)", headers: authorizationHeader)
-            .response { responseRequest, responseResponse, responseData, responseError in
-                request = responseRequest
-                response = responseResponse
-                data = responseData
-                error = responseError
-
-                expectation.fulfill()
-            }
-
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
         XCTAssertNotNil(request, "request should not be nil")
@@ -172,10 +133,10 @@ class HTTPDigestAuthenticationTestCase: AuthenticationTestCase {
         var request: NSURLRequest?
         var response: NSHTTPURLResponse?
         var data: NSData?
-        var error: NSError?
+        var error: ErrorType?
 
         // When
-        manager.request(.GET, URLString)
+        Alamofire.request(.GET, URLString)
             .authenticate(user: "invalid", password: "credentials")
             .response { responseRequest, responseResponse, responseData, responseError in
                 request = responseRequest
@@ -186,14 +147,17 @@ class HTTPDigestAuthenticationTestCase: AuthenticationTestCase {
                 expectation.fulfill()
             }
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
         XCTAssertNotNil(request, "request should not be nil")
-        XCTAssertNotNil(response, "response should not be nil")
-        XCTAssertEqual(response?.statusCode ?? 0, 401, "response status code should be 401")
+        XCTAssertNil(response, "response should be nil")
         XCTAssertNotNil(data, "data should not be nil")
-        XCTAssertNil(error, "error should be nil")
+        XCTAssertNotNil(error, "error should not be nil")
+
+        if let code = (error as? NSError)?.code {
+            XCTAssertEqual(code, -999, "error should be NSURLErrorDomain Code -999 'cancelled'")
+        }
     }
 
     func testHTTPDigestAuthenticationWithValidCredentials() {
@@ -203,10 +167,10 @@ class HTTPDigestAuthenticationTestCase: AuthenticationTestCase {
         var request: NSURLRequest?
         var response: NSHTTPURLResponse?
         var data: NSData?
-        var error: NSError?
+        var error: ErrorType?
 
         // When
-        manager.request(.GET, URLString)
+        Alamofire.request(.GET, URLString)
             .authenticate(user: user, password: password)
             .response { responseRequest, responseResponse, responseData, responseError in
                 request = responseRequest
@@ -217,7 +181,7 @@ class HTTPDigestAuthenticationTestCase: AuthenticationTestCase {
                 expectation.fulfill()
             }
 
-        waitForExpectationsWithTimeout(timeout, handler: nil)
+        waitForExpectationsWithTimeout(defaultTimeout, handler: nil)
 
         // Then
         XCTAssertNotNil(request, "request should not be nil")

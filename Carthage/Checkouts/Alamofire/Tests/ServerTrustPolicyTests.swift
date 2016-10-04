@@ -1,26 +1,24 @@
+// MultipartFormDataTests.swift
 //
-//  MultipartFormDataTests.swift
+// Copyright (c) 2014–2015 Alamofire Software Foundation (http://alamofire.org/)
 //
-//  Copyright (c) 2014-2016 Alamofire Software Foundation (http://alamofire.org/)
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 import Alamofire
 import Foundation
@@ -204,22 +202,13 @@ class ServerTrustPolicyTestCase: BaseTestCase {
 
     func trustIsValid(trust: SecTrust) -> Bool {
         var isValid = false
-    #if swift (>=2.3)
-        var result = SecTrustResultType(rawValue: SecTrustResultType.Invalid.rawValue)
-        let status = SecTrustEvaluate(trust, &result!)
-    #else
+
         var result = SecTrustResultType(kSecTrustResultInvalid)
         let status = SecTrustEvaluate(trust, &result)
-    #endif
 
         if status == errSecSuccess {
-        #if swift (>=2.3)
-            let unspecified = SecTrustResultType(rawValue: SecTrustResultType.Unspecified.rawValue)
-            let proceed = SecTrustResultType(rawValue: SecTrustResultType.Proceed.rawValue)
-        #else
             let unspecified = SecTrustResultType(kSecTrustResultUnspecified)
             let proceed = SecTrustResultType(kSecTrustResultProceed)
-        #endif
 
             isValid = result == unspecified || result == proceed
         }
@@ -342,7 +331,6 @@ class ServerTrustPolicyExplorationSSLPolicyValidationTestCase: ServerTrustPolicy
         setRootCertificateAsLoneAnchorCertificateForTrust(trust)
 
         // When
-
         let policies = [SecPolicyCreateSSL(true, "test.alamofire.org")]
         SecTrustSetPolicies(trust, policies)
 
@@ -970,7 +958,7 @@ class ServerTrustPolicyPinCertificatesTestCase: ServerTrustPolicyTestCase {
 
         // When
         let serverTrustIsValid = serverTrustPolicy.evaluateServerTrust(serverTrust, isValidForHost: host)
-
+        
         // Then
         XCTAssertTrue(serverTrustIsValid, "server trust should pass evaluation")
     }
@@ -1396,35 +1384,5 @@ class ServerTrustPolicyCustomEvaluationTestCase: ServerTrustPolicyTestCase {
 
         // Then
         XCTAssertFalse(serverTrustIsValid, "server trust should not pass evaluation")
-    }
-}
-
-// MARK: -
-
-class ServerTrustPolicyCertificatesInBundleTestCase: ServerTrustPolicyTestCase {
-    func testOnlyValidCertificatesAreDetected() {
-        // Given
-        // Files present in bundle in the form of type+encoding+extension [key|cert][DER|PEM].[cer|crt|der|key|pem]
-        // certDER.cer: DER-encoded well-formed certificate
-        // certDER.crt: DER-encoded well-formed certificate
-        // certDER.der: DER-encoded well-formed certificate
-        // certPEM.*: PEM-encoded well-formed certificates, expected to fail: Apple API only handles DER encoding
-        // devURandomGibberish.crt: Random data, should fail
-        // keyDER.der: DER-encoded key, not a certificate, should fail
-
-        // When
-        let certificates = ServerTrustPolicy.certificatesInBundle(
-            NSBundle(forClass: ServerTrustPolicyCertificatesInBundleTestCase.self)
-        )
-
-        // Then
-        // Expectation: 19 well-formed certificates in the test bundle plus 4 invalid certificates.
-        #if os(OSX)
-            // For some reason, OSX is allowing all certificates to be considered valid. Need to file a
-            // rdar demonstrating this behavior.
-            XCTAssertEqual(certificates.count, 23, "Expected 23 well-formed certificates")
-        #else
-            XCTAssertEqual(certificates.count, 19, "Expected 19 well-formed certificates")
-        #endif
     }
 }
