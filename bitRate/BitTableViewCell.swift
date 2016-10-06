@@ -11,5 +11,6 @@ import UIKit
 class BitTableViewCell : UITableViewCell {
 
     @IBOutlet weak var lastPriceLabel : UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
 }

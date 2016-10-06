@@ -6,9 +6,9 @@
 //  Copyright © 2016年 NishiokaKohei. All rights reserved.
 //
 
-import UIKit
 import Alamofire
 import SwiftyJSON
+import UIKit
 
 private let api_trades_history = "https://api.zaif.jp/api/1/trades/btc_jpy"
 private let api_last_price = "https://api.zaif.jp/api/1/last_price/btc_jpy"
@@ -41,8 +41,7 @@ class APIViewController : UIViewController {
                     let swiftyJasonVar = JSON(responseData.result.value!)
                     self.getData(swiftyJasonVar)
                 }
-                
-            }
+        }
     }
 
     func getData(swifyJSON:JSON) {
@@ -64,8 +63,9 @@ class APIViewController : UIViewController {
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell : BitTableViewCell = tableView.dequeueReusableCellWithIdentifier("bitCell", forIndexPath: indexPath) as! BitTableViewCell
         var currncies = dataPrices[indexPath.row]
-//        cell.lastPriceLabel.text = currncies["price"] as? String
-        print(currncies["price"])
+        cell.lastPriceLabel.text = currncies["price"]?.description
+        cell.dateLabel.text = currncies["date"]?.description
+        print(currncies["date"])
         return cell
     }
     

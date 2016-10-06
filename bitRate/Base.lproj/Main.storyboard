@@ -34,13 +34,22 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RUo-TA-f1I">
+                                                    <rect key="frame" x="531" y="11" width="42" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="RUo-TA-f1I" secondAttribute="trailing" constant="27" id="4w0-S7-7TF"/>
                                                 <constraint firstItem="xrw-D3-eEt" firstAttribute="top" secondItem="ywZ-vx-w2k" secondAttribute="top" constant="8" id="FGt-mD-sQw"/>
+                                                <constraint firstItem="RUo-TA-f1I" firstAttribute="centerY" secondItem="ywZ-vx-w2k" secondAttribute="centerY" id="WcK-cg-ybc"/>
                                                 <constraint firstItem="xrw-D3-eEt" firstAttribute="leading" secondItem="ywZ-vx-w2k" secondAttribute="leading" constant="19" id="wBi-4j-FnB"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="dateLabel" destination="RUo-TA-f1I" id="5J6-2Z-oIe"/>
                                             <outlet property="lastPriceLabel" destination="xrw-D3-eEt" id="PAR-Fv-Kzw"/>
                                         </connections>
                                     </tableViewCell>
