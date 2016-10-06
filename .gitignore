@@ -1,6 +1,7 @@
 #
 .gitignore
 #
+/Pods/
 /Pods/*
 /bitRate.xcworkspace/
 #
@@ -21,3 +22,6 @@ Carthage/Checkouts
 
 /Carthage/Build/
 /Carthage/Checkouts/
+
+Cartfile
+Cartfile.resolved
