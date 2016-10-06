@@ -61,7 +61,8 @@ class APIViewController : UIViewController {
     // MARK: - UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell : BitTableViewCell = tableView.dequeueReusableCellWithIdentifier("bitCell", forIndexPath: indexPath) as! BitTableViewCell
+        let cell : BitTableViewCell
+            = tableView.dequeueReusableCellWithIdentifier("bitCell", forIndexPath: indexPath) as! BitTableViewCell
         var currncies = dataPrices[indexPath.row]
         cell.lastPriceLabel.text = currncies["price"]?.description
         cell.dateLabel.text = currncies["date"]?.description
