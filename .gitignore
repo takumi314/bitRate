@@ -1,1 +1,18 @@
+#
+/Cartfile/		
+/Carthage/		
 
+Podfile.lock		
+bitRate			
+
+#
+/bitRate.xcworkspace/
+Cartfile.resolved	
+
+#
+Podfile			
+/Pods/			
+bitRate.xcodeproj
+
+#
+.gitignore
