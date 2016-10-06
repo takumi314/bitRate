@@ -10,10 +10,18 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class APIViewController: UIViewController {
+private let api_trades_history = "https://api.zaif.jp/api/1/trades/btc_jpy"
+private let api_last_price = "https://api.zaif.jp/api/1/last_price/btc_jpy"
+
+class APIViewController : UIViewController {
     
-    @IBOutlet var table:UITableView!
+    // MARK: - IBOutlet
+    
+    @IBOutlet weak var table : UITableView!
     var dataPrices = [[String:AnyObject]]()
+    
+    
+    // MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,10 +31,12 @@ class APIViewController: UIViewController {
         
     }
     
+    
+    // MARK: - API
+    
     func getAPI() {
-        Alamofire.request(.GET, "https://api.zaif.jp/api/1/last_price/btc_jpy")
+        Alamofire.request(.GET, api_trades_history)
             .responseJSON { (responseData) -> Void in
-             
                 if responseData.result.value != nil {
                     let swiftyJasonVar = JSON(responseData.result.value!)
                     self.getData(swiftyJasonVar)
@@ -36,11 +46,11 @@ class APIViewController: UIViewController {
     }
 
     func getData(swifyJSON:JSON) {
-        if let data = swifyJSON["last_price"].arrayObject {
+        if let data = swifyJSON.arrayObject {
             self.dataPrices = data as! [[String:AnyObject]]
+            print(swifyJSON)
         }
-
-        refreshTable()
+        self.refreshTable()
     }
     
     func refreshTable() {
@@ -49,18 +59,14 @@ class APIViewController: UIViewController {
         }
     }
     
-    
+    // MARK: - UITableView
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cell : UITableViewCell = tableView.dequeueReusableCellWithIdentifier("jsonCell")!
+        let cell : BitTableViewCell = tableView.dequeueReusableCellWithIdentifier("bitCell", forIndexPath: indexPath) as! BitTableViewCell
         var currncies = dataPrices[indexPath.row]
-        
-        cell.textLabel?.text = currncies["last_price"] as? String
-        cell.detailTextLabel?.text = currncies["email"] as? String
-        
+//        cell.lastPriceLabel.text = currncies["price"] as? String
+        print(currncies["price"])
         return cell
-    
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

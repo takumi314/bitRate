@@ -13,6 +13,7 @@
 		E12224961D9D7C3500E01C11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E12224951D9D7C3500E01C11 /* Assets.xcassets */; };
 		E12224991D9D7C3500E01C11 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E12224971D9D7C3500E01C11 /* LaunchScreen.storyboard */; };
 		E12224A61D9D872900E01C11 /* APIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12224A51D9D872900E01C11 /* APIViewController.swift */; };
+		E1DE6AC71DA55B1600A355BB /* BitTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1DE6AC61DA55B1600A355BB /* BitTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		E12224A51D9D872900E01C11 /* APIViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIViewController.swift; sourceTree = "<group>"; };
 		E1DE6ABA1DA1664500A355BB /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/iOS/SwiftyJSON.framework; sourceTree = "<group>"; };
 		E1DE6ABC1DA1684700A355BB /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		E1DE6AC61DA55B1600A355BB /* BitTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitTableViewCell.swift; sourceTree = "<group>"; };
 		E63051EA18929D7684889C88 /* Pods_bitRate.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_bitRate.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 				E12224971D9D7C3500E01C11 /* LaunchScreen.storyboard */,
 				E122249A1D9D7C3500E01C11 /* Info.plist */,
 				E12224A51D9D872900E01C11 /* APIViewController.swift */,
+				E1DE6AC61DA55B1600A355BB /* BitTableViewCell.swift */,
 			);
 			path = bitRate;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E1DE6AC71DA55B1600A355BB /* BitTableViewCell.swift in Sources */,
 				E122248F1D9D7C3500E01C11 /* AppDelegate.swift in Sources */,
 				E12224A61D9D872900E01C11 /* APIViewController.swift in Sources */,
 			);
