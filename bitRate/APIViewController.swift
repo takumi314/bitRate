@@ -10,8 +10,8 @@ import Alamofire
 import SwiftyJSON
 import UIKit
 
-private let api_trades_history = "https://api.zaif.jp/api/1/trades/btc_jpy"
-private let api_last_price = "https://api.zaif.jp/api/1/last_price/btc_jpy"
+private let API_TRADES_HISTORY = "https://api.zaif.jp/api/1/trades/btc_jpy"
+private let API_LAST_PRICE = "https://api.zaif.jp/api/1/last_price/btc_jpy"
 
 class APIViewController : UIViewController {
     
@@ -35,7 +35,7 @@ class APIViewController : UIViewController {
     // MARK: - API
     
     func getAPI() {
-        Alamofire.request(.GET, api_trades_history)
+        Alamofire.request(.GET, API_TRADES_HISTORY)
             .responseJSON { (responseData) -> Void in
                 if responseData.result.value != nil {
                     let swiftyJasonVar = JSON(responseData.result.value!)
