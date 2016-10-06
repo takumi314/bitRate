@@ -1,20 +1,16 @@
 #
 .gitignore
 #
-/Pods/
+/Pods/*
+/bitRate.xcworkspace/
 #
+*.xcodeproj/*
 !*.xcodeproj/project.pbxproj
-!bitRate.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
 .DS_Store
 #
 bitRate.xcworkspace
 
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
-/Carthage/
-Cartfile/*
 # Carthage
 #
 # Add this line if you want to avoid checking in source code from Carthage dependencies.
