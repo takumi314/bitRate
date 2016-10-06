@@ -1,18 +1,17 @@
 #
-/Cartfile/		
-/Carthage/		
-
-Podfile.lock		
-bitRate			
-
-#
-/bitRate.xcworkspace/
-Cartfile.resolved	
-
-#
-Podfile			
-/Pods/			
-bitRate.xcodeproj
-
-#
 .gitignore
+#
+/Pods/
+#
+!*.xcodeproj/project.pbxproj
+!bitRate.xcworkspace/
+.DS_Store
+#
+bitRate.xcworkspace
+
+# Carthage
+#
+# Add this line if you want to avoid checking in source code from Carthage dependencies.
+# Carthage/Checkouts
+/Carthage/
+
