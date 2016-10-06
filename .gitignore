@@ -22,3 +22,6 @@ Carthage/Checkouts
 
 /Carthage/Build/
 /Carthage/Checkouts/
+
+Cartfile
+Cartfile.resolved
