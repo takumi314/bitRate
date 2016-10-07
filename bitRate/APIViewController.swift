@@ -13,12 +13,12 @@ import UIKit
 private let API_TRADES_HISTORY = "https://api.zaif.jp/api/1/trades/btc_jpy"
 private let API_LAST_PRICE = "https://api.zaif.jp/api/1/last_price/btc_jpy"
 
-class APIViewController : UIViewController {
+class APIViewController: UIViewController {
     
     // MARK: - IBOutlet
     
-    @IBOutlet weak var table : UITableView!
-    var dataPrices = [[String:AnyObject]]()
+    @IBOutlet weak var table: UITableView!
+    var dataPrices = [[String: AnyObject]]()
     
     
     // MARK: - Life Cycle
@@ -34,7 +34,7 @@ class APIViewController : UIViewController {
     
     // MARK: - API
     
-    func getAPI() {
+    private func getAPI() {
         Alamofire.request(.GET, API_TRADES_HISTORY)
             .responseJSON { (responseData) -> Void in
                 if responseData.result.value != nil {
@@ -44,15 +44,15 @@ class APIViewController : UIViewController {
         }
     }
 
-    func getData(swifyJSON:JSON) {
+    private func getData(swifyJSON:JSON) {
         if let data = swifyJSON.arrayObject {
-            self.dataPrices = data as! [[String:AnyObject]]
+            self.dataPrices = data as! [[String: AnyObject]]
             print(swifyJSON)
         }
         self.refreshTable()
     }
     
-    func refreshTable() {
+    private func refreshTable() {
         if self.dataPrices.count > 0 {
             self.table.reloadData()
         }
@@ -60,8 +60,8 @@ class APIViewController : UIViewController {
     
     // MARK: - UITableView
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell : BitTableViewCell
+    private func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell: BitTableViewCell
             = tableView.dequeueReusableCellWithIdentifier("bitCell", forIndexPath: indexPath) as! BitTableViewCell
         var currncies = dataPrices[indexPath.row]
         cell.lastPriceLabel.text = currncies["price"]?.description
@@ -70,7 +70,7 @@ class APIViewController : UIViewController {
         return cell
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    private func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataPrices.count
     }
         
